@@ -7,6 +7,11 @@ contract ReduceCoContract {
         uint256 offerAmount;
         uint256 measurement;
     }
+
+    struct OfferWithActualReduction {
+        CO2ReductionOffer offer;
+        uint256 reduction;
+    }
     
     address dataSubmitter;
     uint256 fund;
@@ -58,28 +63,29 @@ contract ReduceCoContract {
     }
 
     // Sorted offer needs to be sorted from best to worse with remainders nulled
-    function insertSortedMemory(CO2ReductionOffer[] memory sortedOffers, CO2ReductionOffer memory newOffer) 
-        internal returns(CO2ReductionOffer[] memory){
+    function insertSortedMemory(OfferWithActualReduction[] memory sortedOffers, OfferWithActualReduction memory newOfferWithReduction) 
+        internal pure returns(OfferWithActualReduction[] memory){
         // We need to track if the offer has been placed because all the next ones need to be shifted forward
         bool placedInArray = false;
         // Temp storage is needed to do an element shift over two for loop runs
-        CO2ReductionOffer memory shiftStorage;
+        OfferWithActualReduction memory shiftStorage;
 
         for(uint i = 0; i < sortedOffers.length; i++){
-            CO2ReductionOffer memory focusedOffer = sortedOffers[i];
+            OfferWithActualReduction memory focusedOfferReduction = sortedOffers[i];
+            CO2ReductionOffer memory focusedOffer = focusedOfferReduction.offer;
 
             if(placedInArray){
                 sortedOffers[i] = shiftStorage;
-                shiftStorage = focusedOffer;
+                shiftStorage = focusedOfferReduction;
 
                 if(focusedOffer.owner == address(0)){
                     // We found a null offer, meaning next ones all will be null. So we exit.
                     break;
                 }
-            }else if(newOffer.offerAmount < focusedOffer.offerAmount){
+            }else if(newOfferWithReduction.offer.offerAmount < focusedOffer.offerAmount){
                 // This offer is cheaper than the focused offer! Let's store it
-                shiftStorage = focusedOffer;
-                sortedOffers[i] = newOffer;
+                shiftStorage = focusedOfferReduction;
+                sortedOffers[i] = newOfferWithReduction;
                 placedInArray = true;
             }
         }
@@ -119,21 +125,20 @@ contract ReduceCoContract {
         require(dataSubmitter == msg.sender, "You are not the verified data submitter!");
         require(coordinates.length == measurements.length, "Arrays do not have same length!");
 
-        CO2ReductionOffer[] memory offersWithReduction = new CO2ReductionOffer[](coordinates.length);
+        OfferWithActualReduction[] memory offersWithReduction = new OfferWithActualReduction[](coordinates.length);
 
         for(uint i = 0; i < coordinates.length; i++){
-            CO2ReductionOffer memory focusedOffer = offers(coordinates[i]);
-            uint256 reduction = focusedOffer.measurement - measurements[i];
+            CO2ReductionOffer memory focusedOffer0 = offers[coordinates[i]];
+            uint256 reduction0 = focusedOffer0.measurement - measurements[i];
 
-            if(reduction > 0){
-                insertSortedMemory(offersWithReduction, focusedOffer);
+            if(reduction0 > 0){
+                insertSortedMemory(offersWithReduction, OfferWithActualReduction(focusedOffer0, reduction0));
             }
         }
 
-        for(uint i = 0; i < offersWithReduction.length; i++){
-            uint256 reduction = 1;
-            CO2ReductionOffer memory focusedOffer = offersWithReduction[i];
-            uint256 totalReductionReward = focusedOffer.focusedOffer * reduction;
+        for(uint j = 0; j < offersWithReduction.length; j++){
+            OfferWithActualReduction memory focusedOffer1 = offersWithReduction[j];
+            uint256 totalReductionReward = focusedOffer1.offer.offerAmount * focusedOffer1.reduction;
             uint256 payableReward;
 
             if(fund < totalReductionReward){
@@ -142,7 +147,8 @@ contract ReduceCoContract {
                 payableReward = totalReductionReward;
             }
 
-            focussedOffer.owner.send()
+            fund -= payableReward;
+            focusedOffer1.offer.owner.transfer(payableReward);
         }
 
         return true;
