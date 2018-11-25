@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>dApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/main.css" />
+    <script src="js/main.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="decisionfields" id="decisionfields">
+            <div class="title-words">
+                <h2>I am a ...</h2>
+            </div>
+            <div class="new-farmer-side">
+                <div class="button-holder">
+                    <button class="choice-button" id="new-farmer-button">New Farmer</button>
+                </div>
+            </div>
+            <div class="returning-farmer">
+                <div class="button-holder">
+                    <button class="choice-button" id="returning-farmer-button">Returning farmer</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="new-farmer-window" id="new-farmer-window">
+            <h2>Sign up for lowering your emissions</h2>
+            <h2 class="close-button">X</h2>
+
+            <form id="new-farmer-form">
+                <input type="text" name="address" placeholder="PChain wallet address">
+                
+                <div class="img-holder">
+                    <img src="img/firstmapimage.jpg" id="map-image">
+                </div>
+
+                <input type="text" name="coordinates" id="coordinates" placeholder="Coordinates" disabled>
+
+                <input type="text" name="offer" placeholder="How much will you ask per decreased CO2 ton (in euros)">
+
+                <input type="submit" value="Start saving the nature"> 
+            </form>
+        </div>
+
+        <div class="returning-farmer-window" id="returning-farmer-window">
+            <h2>Check your progress</h2>
+            <h2 class="close-button">X</h2>
+
+            <form id="returning-farmer-form">
+                <input type="text" name="name" placeholder="Your name">
+
+                <input type="submit" value="Check your emission decreasing progress">
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>
