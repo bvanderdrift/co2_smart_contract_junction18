@@ -20,9 +20,9 @@ module.exports = function(app) {
      * GET requests
      */
     
-    app.get("/getOffers", (req, res) => {
+    app.get("/getOffers", async (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost');
-        res.send(contract.getOffers());
+        res.send(await contract.getOffers());
     });
 
     app.get("/depositFunds", (req, res) => {
@@ -41,8 +41,8 @@ module.exports = function(app) {
         res.send("Hello");
     });
 
-    app.post("/submitOffer", (req, res) => {
-        contract.submitOffer(req);
+    app.post("/submitOffer", async (req, res) => {
+        await contract.submitOffer(req);
         res.send();
     });
     

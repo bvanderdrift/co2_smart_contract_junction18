@@ -96,6 +96,7 @@ contract ReduceCoContract {
     // Sorted offer needs to be sorted from best to worse with remainders nulled
     function insertSortedTop10(CO2ReductionOffer memory newOffer) 
         internal{
+        top10Offers[0] = newOffer;
         // We need to track if the offer has been placed because all the next ones need to be shifted forward
         bool placedInArray = false;
         // Temp storage is needed to do an element shift over two for loop runs

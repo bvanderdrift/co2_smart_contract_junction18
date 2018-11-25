@@ -6,12 +6,12 @@ const bodyParser = require('body-parser');
 
 const port = 8080;
 
-require("./app/routes") (app, {});
+require("./server/routes") (app, {});
 
 
 // use it before all route definitions
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static("./frontend"))
+app.use(express.static("./client"))
 app.use(cors({origin: 'http://localhost'}));
 
 app.listen(port, () => {
